@@ -11,7 +11,7 @@ import java.sql.*;
  */
 public class ConnectionManager {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
 
     private Connection con;
     private String url;
@@ -56,12 +56,24 @@ public class ConnectionManager {
         }
     }
 
-    public Connection getConnection() throws ConnectionException {
+    public Connection getConnection() {
         LOGGER.info("Trying to retrieve Connection.");
         try {
+            checkConnection();
+            LOGGER.info("Returning Connection");
+            return con;
+        } catch (ConnectionException e) {
+
+        }
+        return null;
+    }
+
+    public void checkConnection() throws ConnectionException{
+        LOGGER.info("Checking Connection");
+        try {
             if(con == null || !con.isClosed()){
-                LOGGER.info("Returning Connection.");
-                return con;
+                LOGGER.info("Connection works!");
+                return;
             }
         } catch (SQLException e) {
             LOGGER.error("Error by trying to receive Connection.");
@@ -71,4 +83,6 @@ public class ConnectionManager {
         LOGGER.error("Connection is not established.");
         throw new ConnectionException();
     }
+
+
 }
